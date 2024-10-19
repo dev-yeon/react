@@ -1,0 +1,22 @@
+// 변수의 선언
+
+$font30 : 30px;
+$font50 : 50px;
+$colorOrange : orange;
+$colorPink : pink;
+$colorPurple: purple;
+$colorLightCyan: lightcyan;
+
+//mixin 여러가지 스타일을 선언후에, 그룹화 재활용 하는 목적을 가진 명령어. 
+
+@mixin square($size) {
+  $calc : 100px * $size;
+  width: $calc;
+  height: $calc;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

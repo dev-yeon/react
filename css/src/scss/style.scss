@@ -1,0 +1,36 @@
+/*
+scss 의 특징
+1. 변수의 활용
+2. 태그의 중첩 (자식요소를 처리 할 때 유용)
+3. 여러가지 sass 용 매서드 활용 ( mixin, for, if, function 등..) 가능  
+4. import 방식을 채택한다. 
+
+scss 와 sass 의 차이 
+중첩시 { } 의 유무가 
+*/
+@import './component.scss';
+
+.container {
+  background: gray;
+  //mixin 호출 :  @include mixin명
+  // @include flex-center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .box {
+    background: coral;
+    opacity: 0.7;
+    transition: 300ms;
+    @include square(1);
+
+    &.orange {
+      background: $colorOrange;
+      @include square(2);
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
