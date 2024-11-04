@@ -1,6 +1,6 @@
 
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import {get, ref, getDatabase, set, remove} from "firebase/database";
 import {v4 as uuid} from 'uuid';
 
@@ -181,6 +181,7 @@ export async function joinEmail(email, password, name, ) {
   try {
     // 이메일과 비밀번호로 사용자 생성
     const userData = await createUserWithEmailAndPassword(auth, email, password);
+    //createUserWithEmailAndPassword 는 사용자 정보 중에서 이메일과 패스워드만  
 
     // 추가 사용자 정보 저장
     const user = userData.user;
@@ -196,4 +197,43 @@ export async function joinEmail(email, password, name, ) {
     console.error("회원가입 중 오류가 발생했습니다:", error);
     return { success: false, error };
   }
+}
+
+//이메일 로그인 
+
+export async function loginEmail(email, password) {
+  try {
+    const userData = await signInWithEmailAndPassword(auth, email,password)
+    return userData.user; 
+  } catch(error) {
+    console.error(error);
+  }
+}
+
+
+// 검색 
+export async function SearchProducts(query) {
+
+  try {
+    const dbRef = ref(database,  `products`);
+    const snapshot = await get(dbRef);
+    if(snapshot.exists()) {
+      const data = snapshot.val();
+      const allProducts = Object.values(data);
+
+      if(allProducts.length === 0 ){
+        return []
+      }
+      // 제목을 검색할거임. 
+      const matchProducts = allProducts.filter((product)=>{
+        const itemTitle = product.title; 
+        return itemTitle.includes(query);
+      })
+      return matchProducts
+    } else {
+      return []
+    }
+    } catch(error) {
+      console.error(error)
+  } 
 }

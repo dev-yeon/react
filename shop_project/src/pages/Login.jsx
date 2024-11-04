@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { googleLogin } from '../api/firebase'
+import { googleLogin, loginEmail } from '../api/firebase'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Link } from 'react-router-dom';  
@@ -8,7 +8,8 @@ export default function Login(){
   const navigate = useNavigate()
   const [email, setEmail] =useState('');
   const [password , setPassword] = useState('');
-  const {errMsg, setErrMsg} = useState('');
+  const [errMsg, setErrMsg] = useState('');
+  
 
   
   const handleGoogleLogin = async()=>{
@@ -16,10 +17,24 @@ export default function Login(){
     navigate('/')
 
   }
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setErrMsg('')
+    try {
+      const user = await loginEmail(email, password)
+      if (user){
+        navigate('/')
+      } else {
+        setErrMsg('이메일이나 비밀번호가 일치하지 않습니다.')
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return (
     <div className='container'>
       <h1>로그인</h1>
-      <form>
+      <form onSubmit={handleLogin}>
         <input 
           type='email' 
           placeholder='이메일을 입력하세요.'
@@ -37,6 +52,7 @@ export default function Login(){
          
       </form>
       <GoogleBtn onClick={handleGoogleLogin}> 구글 로그인 </GoogleBtn>
+      {errMsg && <span className='errorText'>{errMsg}</span>}
       <Link to = '/join'>회원가입</Link>
 
       

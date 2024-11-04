@@ -63,12 +63,20 @@ button{
    background: transparent;
    padding: 0;
 }
-input {
+/* input {
    padding:0;
    outline: none;
    border: none;
    background: transparent;
-}
+} */
+
+   input {
+    padding: 0.5em; /* 여백 추가 */
+    outline: none;
+    border: 1px solid #ccc; /* 기본 테두리 추가 */
+    background-color: #f9f9f9; /* 연한 회색 배경 추가 */
+    color: #333; /* 텍스트 색상 */
+  }
 html, body {
    background: #fff;
    overflow-x: hidden;

@@ -50,24 +50,38 @@ export default function Join(){
     if (!validatorName(userName)) {
       return;
     } 
-    if (userPassword.length < 6) {
-      setPsErr('비밀번호는 6 글자 이상이어야 합니다.');
-      return;
-    }
+    // if (userPassword.length < 6) {
+    //   setPsErr('비밀번호는 6 글자 이상이어야 합니다.');
+    //   return;
+    // }
+    // try {
+    //   const result = await joinEmail(userEmail, userPassword, userName); // result 변수에 할당
+    //   if (result.error) {
+    //     if (result.error.code === 'auth/email-already-in-use') {
+    //         setEmailErr('이미 사용 중인 이메일입니다.');
+    //     }
+    //     return;
+    //   } else {
+    //     navigate('/login');
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    // }
     try {
-      const result = await joinEmail(userEmail, userPassword, userName); // result 변수에 할당
-      if (result.error) {
-        if (result.error.code === 'auth/email-already-in-use') {
-          setEmailErr('이미 사용 중인 이메일입니다.');
-        }
-        return;
-      } else {
-        navigate('/login');
+      const result = await joinEmail(userEmail, userPassword, userName) 
+      console.log(result);
+      if (result){
+        navigate('/login')
       }
-    } catch (error) {
-
-      console.error(error);
-      
+    }catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+            setEmailErr('이미 사용 중인 이메일입니다.');
+        }
+      else if( error.code === 'auth/weak-password') {
+        setPsErr('이메일이 너무 약합니다. ')
+      }else {
+        console.log(error);
+      }
     }
   };
 

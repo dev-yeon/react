@@ -12,6 +12,7 @@ import CategoryPages from './pages/CategoryPages';
 import ProductDetail from './pages/ProductDetail';
 import MyCart from './pages/MyCart';
 import Join from './pages/Join';
+import Search from './pages/Search';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const ProtectRouter = ({checkAdmin, children}) => {
@@ -46,6 +47,7 @@ const routes =  createBrowserRouter([
       {path: '/join', element: <Join />},
       {path : '/product/:category', element:<CategoryPages />},
       {path : '/product/detail/:id', element: <ProductDetail />}, 
+      {path: '/search', element: <Search />},
       {
         path : '/product/upload', 
         element: 
