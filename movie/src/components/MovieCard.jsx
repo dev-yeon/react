@@ -1,18 +1,35 @@
-import {motion} from 'framer-motion'
 import styled from 'styled-components';
+import {motion} from 'framer-motion'
+import Modal from '../components/Modal'; // 정의된 Modal 컴포넌트를 가져오기
 import { FaPlay, FaPlus , FaArrowDown} from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
 import Button from "./Button";
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
+import { useState } from 'react';
 
 export default function MovieCard({movie, id,  hoverId,rate,type, imgVariants, infoVariants, setHoverId, getGenresNames, getRating , movieLength}){
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const genreNames = getGenresNames(movie.genre_ids);
   const rating = getRating(movie.adult);
+  const {category, movieId} = useParams();
+  
 
   const navigate = useNavigate();
   const handleModal = (movieId) => {
     navigate (`${type}/${movieId}`);
+
+  }
+  const isModalTrigger = type === category && `${movie.id}` === movieId
+  const handleOpenModal = () => {
+    if(isModalTrigger){
+      setIsModalOpen(true)
+    }
+
+
+  }
+  const handleCloseModal = () =>{
+    setIsModalOpen(false)
   }
 
   return(
@@ -22,8 +39,8 @@ export default function MovieCard({movie, id,  hoverId,rate,type, imgVariants, i
         initial='initial'
         whileHover = 'hover'
         //whileHover
-        onMouseEnter = {()=>setHoverId(movie.id)}
-        onMouseLeave={()=>setHoverId(null)}
+        // onMouseEnter = {()=>setHoverId(movie.id)}
+        // onMouseLeave={()=>setHoverId(null)}
         style={{position:'relative'}}
       >
         {rate && (
@@ -40,7 +57,7 @@ export default function MovieCard({movie, id,  hoverId,rate,type, imgVariants, i
           <div className='infoImg'>
             <img src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}/>
           </div>{/* infoImg */}
-          <div className='infoWrapper' onClick = {handleModal(movie.id)}>
+          <div className='infoWrapper' onClick = {handleOpenModal}>
             <div className='btnsWrapper'>
               <div>
                 <FaPlay />
@@ -59,6 +76,8 @@ export default function MovieCard({movie, id,  hoverId,rate,type, imgVariants, i
         </motion.div> {/* sliderInfo */}
 
       </motion.div>
+      {/*모달 컴포넌츠 호출*/}
+      {isModalOpen && <Modal movie={movie} type={type}></Modal>}
 
     </MovieItem>
   

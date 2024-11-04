@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getModalDetail } from '../axios/axios';
 import { AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
+import {motion} from 'framer-motion'
 
 export default function Modal({movie, type}){
   console.log(movie)

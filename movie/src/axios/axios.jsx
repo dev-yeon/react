@@ -104,3 +104,16 @@ export const getModalDetail = async(movieId, type) =>{
     console.error(error)
   }
 }
+
+export const getSearch = async(keyword)=>{
+  try{
+    const res = await instance.get(`search/multi?query=${keyword}`);
+    // multi = 모든 장르( 영화, tv 등등 모두 포함)
+    // query=${keyword} 검색어를 쿼리 파라메터로 전달 (사용자가 직접 작성한 검색어 )
+    
+    return res.data.results
+  }  catch (error) {
+    console.error(error);
+    return[] // 오류 상태라면 빈 배열을 출력 
+  } 
+}

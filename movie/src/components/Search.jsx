@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FiSearch, FiX } from "react-icons/fi";
 import {motion} from "framer-motion";
 import { useEffect, useRef,useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 // framer-motion 
 /*
 react 에서 사용하는 애니메이션 생성 라이브러리
@@ -19,8 +20,15 @@ export default function Search(){
   const [clearBtn, setClearBtn]= useState(false);
   const [keyword, setKeyword]= useState('');
   const [visible, setVisible]= useState(false);
+  const [list, setList] = useState(false); // 검색 리스트가 있는지 여부 
+  const [movieList, setMovieList] = useState([]) // 검색 결과 리스트를 출력 
   const searchRef = useRef()
   const inputRef = useRef()
+
+  const navigate = useNavigate()
+
+  let date = [] // du
+
   useEffect(()=>{
     const handleClickOutSide = (event) =>{
       if(searchRef.current && !searchRef.current.contains(event.target) && !keyword){
@@ -72,10 +80,18 @@ export default function Search(){
     }
   const hadleInputChange = (e) =>{
     const value = e.target.value
+
     setKeyword(value);
+    
     setClearBtn(value !== '')
-    //value !== '' 
-    // 인풋창의 값이 비어있지 않다면, value !== '', true로 설정해서 ClearBtn 활성
+    if (value.trim()){
+      const searchUrl = `/search?keyword=${value}`
+      console.log(searchUrl)
+      navigate(searchUrl,{ state: {value}})
+    }
+    
+    
+
   }
 
   const handleClearEvent = (e)=>{
