@@ -1,6 +1,6 @@
 
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import {get, ref, getDatabase, set, remove} from "firebase/database";
 import {v4 as uuid} from 'uuid';
 
@@ -171,7 +171,29 @@ export async function updateCart(userId, product) {
   }
 }
 // 장바구니 목록 삭제하기 
-
 export async function deleteCart(userId, productId) {
   return remove(ref(database, `cart/${userId}/${productId}`))
+}
+
+// 이메일 회원 가입
+export async function joinEmail(email, password, name, ) {
+  const auth = getAuth() // 저장할 사용자 인증 폼을 불러옴 
+  try {
+    // 이메일과 비밀번호로 사용자 생성
+    const userData = await createUserWithEmailAndPassword(auth, email, password);
+
+    // 추가 사용자 정보 저장
+    const user = userData.user;
+    await updateProfile(user, {
+      displayName: name
+    });
+    
+    // 로그아웃
+    await signOut(auth);
+
+    return { success: true };
+  } catch (error) {
+    console.error("회원가입 중 오류가 발생했습니다:", error);
+    return { success: false, error };
+  }
 }

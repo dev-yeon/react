@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { joinEmail } from '../api/firebase';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -12,6 +14,7 @@ export default function Join(){
   const [emailErr, setEmailErr] = useState('');
   const [psErr, setPsErr]=useState('');
 
+  const navigate = useNavigate();
   // 이름 유효성 검사 
   const validatorName = (userName) =>{
     if(!userName) {
@@ -38,15 +41,70 @@ export default function Join(){
     */
   }
 
+  const handleJoinEvent = async (e) => {
+    e.preventDefault();
+    setPsErr('');
+    setNameErr('');
+    setEmailErr('');
+  
+    if (!validatorName(userName)) {
+      return;
+    } 
+    if (userPassword.length < 6) {
+      setPsErr('비밀번호는 6 글자 이상이어야 합니다.');
+      return;
+    }
+    try {
+      const result = await joinEmail(userEmail, userPassword, userName); // result 변수에 할당
+      if (result.error) {
+        if (result.error.code === 'auth/email-already-in-use') {
+          setEmailErr('이미 사용 중인 이메일입니다.');
+        }
+        return;
+      } else {
+        navigate('/login');
+      }
+    } catch (error) {
+
+      console.error(error);
+      
+    }
+  };
+
   return (
     <div className='container'>
       <h2>회원가입</h2>
-      <form>
+      <form onSubmit={handleJoinEvent} noValidate>
+        {/* noValidate 인풋 요소가 가지고 있는 기본 유효성 검사 제거  */}
         <div>
           <input 
           type='text' 
-          placeholder='이름을 입력하세요.'/>
+          placeholder='이름을 입력하세요.'
+          value={userName}
+          onChange={(e)=> setUserName(e.target.value)}
+          />
+          {nameErr && <span className='errorText'>{nameErr}</span>}
         </div>
+        <div>
+          <input 
+            type='email' 
+            placeholder='이메일을 입력 하세요.'
+            value={userEmail} 
+            onChange={(e) => setUserEmail(e.target.value)} 
+            /> 
+            {emailErr && <span className='errorText'>{emailErr}</span>}
+        </div>
+
+        <div>
+          <input 
+            type='password' 
+            placeholder='비밀번호를 입력 하세요.'
+            value={userPassword} 
+            onChange={(e) => setUserPassword(e.target.value)}
+          />
+          {psErr && <span className='errorText'>{psErr}</span>}
+        </div>
+        <button type="submit">회원가입</button>
       </form>
     </div>
   )

@@ -27,8 +27,7 @@ export default function AllProduct() {
     //   ))}
     // </>
     <div className='container'>
-      <Products products={product}>
-        
+      <Products products={product}>  
       </Products>
     </div>
   )
