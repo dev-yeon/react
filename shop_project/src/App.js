@@ -6,6 +6,8 @@ import Header from './components/Header';
 import GlobalStyle from './style/GlobalStyle';
 import { AuthContextProvider } from './context/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'; 
+import Admin from './pages/Admin';
+import ProductEdit from './pages/ProductEdit';
 const queryClient = new QueryClient();
 function App() {
   return (

@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState} from 'react';
 import { CategoryContext } from '../context/CategoryContext';
 import styled from 'styled-components';
 import { uploadImg } from '../api/imgUpload';
-import { addProducts } from '../api/firebase';
+import { addProducts, updateProduct } from '../api/firebase';
 
 export default function UploadProduct ({initialProduct, isEdit = false, onSave}){
   const [file, setFile] = useState(null) // 파일 업로드 
@@ -53,9 +53,14 @@ export default function UploadProduct ({initialProduct, isEdit = false, onSave})
   const handleUpload = async (e)=> {
     e.preventDefault();
     try {
-      const url = await uploadImg(file);
-      await addProducts(product,url)
-      setSuccess('업로드가 완료 되었습니다.')
+      const url = file?  await uploadImg(file) : initialProduct.img //수정시 기본 이미지 
+      if(isEdit) {
+        await updateProduct(initialProduct.id, {...product, img : url})
+        setSuccess('수정이 완료 되었습니다. ')
+      } else { 
+        await addProducts(product,url)
+        setSuccess('업로드가 완료 되었습니다.')
+      }
       setTimeout(()=> {
         setSuccess(null)
       },2000)
@@ -67,8 +72,6 @@ export default function UploadProduct ({initialProduct, isEdit = false, onSave})
         category:'',
         colors: [],
         description:'',
-        
-
       }) 
       if(fileRef.current){
         fileRef.current.value = ''
@@ -169,7 +172,7 @@ export default function UploadProduct ({initialProduct, isEdit = false, onSave})
           />
                {/* 상품 설명 */}
           <button disabled={isLoading} >
-            {isLoading ? '업로드 중' : '제품 등록하기'}
+            {isLoading ? '업로드 중' : isEdit ?  '수정완료': '제품 등록하기'}
           </button>
           
           {success && (

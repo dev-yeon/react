@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { deleteProduct, getProducts } from '../api/firebase'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function Admin() {
   const [products, setProducts] = useState([]);
@@ -41,15 +41,17 @@ export default function Admin() {
   */
 
   const handleProductEdit = (id) => {
-    navigate(`/admin/edit/${id}`)
-  }
+    console.log(`Navigating to edit page with ID: ${id}`);
+    navigate(`/admin/edit/${id}`);
+  };
   return (
-    <>
+
       <div className='container'>
         <h2>상품 관리</h2>
+        <Link to = '/admin/upload'>상품 업로드</Link>
         <div className='adminList'>
           <ul>
-            {products.map(el => (
+            {products.map((el) => (
               <li key= {el.id}>
                   {el.title}
                   <button onClick={()=> handleProductDelete(el.id)}>삭제</button>
@@ -59,6 +61,5 @@ export default function Admin() {
           </ul>
         </div>
       </div>
-    </>
-  )
+  );
 }

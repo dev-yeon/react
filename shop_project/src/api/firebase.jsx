@@ -443,10 +443,10 @@ export async function  deleteProduct(productId) {
 
 // 상품 수정 
 
-export async function updateProduct(productId) {
+export async function updateProduct(productId, item) {
   try {
     const productRef = ref(database, `products/${productId}`)
-    await update(productRef)
+    await update(productRef, item)
     return {success : true} 
   } catch(error) {
     console.error('상품수정 오류' , error)

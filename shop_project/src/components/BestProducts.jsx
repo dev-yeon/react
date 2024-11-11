@@ -34,12 +34,12 @@ export default function BestProducts() {
 
   return ( 
     <div className='container'>
-      <h2>인기상품</h2>
-      <ul>
-        {products.map((el)=> (
-            <DetailPageEvent product={el} />
-        ))}
-      </ul>
-    </div>
+    <h2>인기상품</h2>
+    <ul>
+      {products.map((el) => (
+        <DetailPageEvent key={el.id} product={el} /> 
+      ))}
+    </ul>
+  </div>
   )
 }
