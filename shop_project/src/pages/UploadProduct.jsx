@@ -1,11 +1,11 @@
-import { useContext, useRef, useState} from 'react';
+import { useContext, useEffect, useRef, useState} from 'react';
 
 import { CategoryContext } from '../context/CategoryContext';
 import styled from 'styled-components';
 import { uploadImg } from '../api/imgUpload';
 import { addProducts } from '../api/firebase';
 
-export default function UploadProduct (){
+export default function UploadProduct ({initialProduct, isEdit = false, onSave}){
   const [file, setFile] = useState(null) // 파일 업로드 
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(null)
@@ -80,6 +80,12 @@ export default function UploadProduct (){
       setIsLoading(false)
     }
   }
+  // 11.11. 추가 
+  useEffect (()=> {
+    if(isEdit && initialProduct ){
+      setProduct(initialProduct)
+    }
+  },[isEdit,initialProduct])
   return (
     <Container>
       <h1>상품업로드</h1>

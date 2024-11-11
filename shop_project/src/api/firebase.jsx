@@ -1,6 +1,6 @@
 
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
+import { browserSessionPersistence, createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
 import {get, ref, getDatabase, set, remove, update} from "firebase/database";
 
 import {v4 as uuid} from 'uuid';
@@ -27,6 +27,17 @@ const provider = new GoogleAuthProvider()
 const auth = getAuth()
 const database = getDatabase(app)
 
+// 브라우저를 닫으면 로그인이 유지 되지 않도록 설정 
+setPersistence(auth , browserSessionPersistence);
+/*
+firebase의 기본 설정은 브라우저를 닫아도 세션에 로그인 정보를 저장해서
+브라우저를 다시 실행하면 로그인이 되어있다. 
+브라우저를 닫을때 로그아웃이 되도록 설정 하려면,
+setPersistence 추가해서 setPersistence(auth , browserSessionPersistence); 
+를 사용해서 브라우저가 닫힐때 로그인 정보가 없어 지도록 해줘야 한다. 
+
+
+*/
 
 // 구글 로그인 자동 로그인 방지 
 provider.setCustomParameters({
@@ -139,8 +150,7 @@ export async function getCategoryProduct (category) {
   return get(ref(database, 'products')).then((snapshot)=> {
     if (snapshot.exists()){
       const allProducts = Object.values(snapshot.val());
-      const filterProducts = allProducts.
-        filter((product)=> product.category === category)
+      const filterProducts = allProducts.filter((product)=> product.category === category)
       return filterProducts
     }
     return []
@@ -336,7 +346,7 @@ export async function getReview(productId) {
 export async function addLike(productId ,userId) {
 
   const likeRef = ref(database, `like/${productId}`)
-  const userRef = ref(database, `like/${productId}/user/${userId}`);
+  //const userRef = ref(database, `like/${productId}/user/${userId}`);
   try {
     const snapshot = await get(likeRef);
     let currentLikes = snapshot.exists() ? snapshot.val().count : 0 
@@ -393,6 +403,71 @@ export async function getLike(productId) {
   } catch(error) {
     console.error(error);
     return 0
+  }
+}
+
+/// 좋아요가 좋은 상품만 출력 
+
+export async function getAllProducts() {
+
+  const productRef = ref(database , 'products')
+  try {
+    const snapshot = await get(productRef); 
+    if(snapshot.exists()) {
+      const products = snapshot.val();
+      return Object.keys(products).map((key)=>({id:key , ...products[key]}))
+    } else {
+      return []
+    }
+  } catch(error) {
+  console.error(error)
+  return [] 
+  }
+}
+
+//상품 삭제
+
+export async function  deleteProduct(productId) {
+  try {
+    const productRef = ref(database, `products/${productId}`);
+    await remove(productRef)
+    return {success : true};
+
+  } catch (error) {
+    console.error('상품 삭제 오류가 생겼습니다.' , error)
+    return {error} 
+  }
+  
+}
+
+
+// 상품 수정 
+
+export async function updateProduct(productId) {
+  try {
+    const productRef = ref(database, `products/${productId}`)
+    await update(productRef)
+    return {success : true} 
+  } catch(error) {
+    console.error('상품수정 오류' , error)
+    return {error}
+  }
+  
+}
+
+// 해당 id 의 상품을 가져오기, 
+export async function getProductById(productId) {
+  try { 
+    const productRef = ref(database,  `products/${productId}`);
+    const snapshot = await get(productRef)
+    if (snapshot.exists()) {
+      return snapshot.val()
+    }else {
+      throw new Error('해당 제품이 존재하지 않습니다. ')
+    }
+  } catch (error) {
+    console.error('제품 가져오기 오류.',error);
+    return null
   }
   
 }

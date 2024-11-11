@@ -16,6 +16,8 @@ import Search from './pages/Search';
 import WritePage from './pages/WritePage';
 import Qna from './pages/Qna';
 import QnaDetailPage from './pages/QnaDetailPage';
+import Admin from './pages/Admin';
+import ProductEdit from './pages/ProductEdit';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const ProtectRouter = ({checkAdmin, children}) => {
@@ -54,11 +56,12 @@ const routes =  createBrowserRouter([
       {path: '/board/write', element: <WritePage />},
       {path: '/board/qna', element : <Qna />},
       {path: '/board/qna/:id' , element : <QnaDetailPage />},
+      {path: '/admin/edit/:id', element: <ProductEdit />},
       {
-        path : '/product/upload', 
+        path : '/admin', 
         element: 
           <ProtectRouter checkAdmin>
-            <UploadProduct/> 
+            <Admin /> 
           </ProtectRouter>
       },
     ]
