@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+
 import {Link, useNavigate} from "react-router-dom";
 import styled from 'styled-components'
 import UserData from './UserData';
@@ -25,6 +26,7 @@ export default function Header (){
         <Link to ='/'>logo</Link>
       </h1>
       <Nav />
+      <Link to='/board/qna'>QnA</Link>
       <div className='rightMenu'>
           {user && user.isAdmin && 
             <Link to ='/product/upload'>업로드</Link>}

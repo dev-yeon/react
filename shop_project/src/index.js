@@ -13,6 +13,9 @@ import ProductDetail from './pages/ProductDetail';
 import MyCart from './pages/MyCart';
 import Join from './pages/Join';
 import Search from './pages/Search';
+import WritePage from './pages/WritePage';
+import Qna from './pages/Qna';
+import QnaDetailPage from './pages/QnaDetailPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const ProtectRouter = ({checkAdmin, children}) => {
@@ -48,6 +51,9 @@ const routes =  createBrowserRouter([
       {path : '/product/:category', element:<CategoryPages />},
       {path : '/product/detail/:id', element: <ProductDetail />}, 
       {path: '/search', element: <Search />},
+      {path: '/board/write', element: <WritePage />},
+      {path: '/board/qna', element : <Qna />},
+      {path: '/board/qna/:id' , element : <QnaDetailPage />},
       {
         path : '/product/upload', 
         element: 

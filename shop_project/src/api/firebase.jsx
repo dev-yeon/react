@@ -1,7 +1,8 @@
 
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
-import {get, ref, getDatabase, set, remove} from "firebase/database";
+import {get, ref, getDatabase, set, remove, update} from "firebase/database";
+
 import {v4 as uuid} from 'uuid';
 
 const firebaseConfig = {
@@ -236,4 +237,162 @@ export async function SearchProducts(query) {
     } catch(error) {
       console.error(error)
   } 
+}
+
+// 데이터 베이스에 게시글 업로드 
+
+export async function addBoard(user, date, title, text) {
+  const id = uuid();
+  const postData = {
+    id, 
+    user,
+    date,
+    title,
+    text 
+  }
+
+  return set(ref(database, `/board/${id}`),postData)
+  
+}
+//게시글 가져오기 
+export async function getBoard() {
+  return get(ref(database,`board`))
+  .then((snapshot)=>{
+    if(snapshot.exists()) {
+      return Object.values(snapshot.val())
+    }
+    return []
+  })
+}
+
+// 게시글에 댓글 저장
+export async function addComments(boardId, user, text) {
+  const id = uuid();
+  
+  // // 필요한 정보만 포함하는 객체 생성
+  // const userForComment = {
+  //   uid: user.uid,
+  //   displayName: user.displayName,
+  //   email: user.email,
+  // };
+
+  return set(ref(database, `/board/${boardId}/comments/${id}`), {
+    id,
+    user,
+    // user: userForComment, // 필요한 정보만 저장
+    text,
+  });
+}
+
+
+// 게시글 댓글 불러오기 
+export async function getComments(boardId) {
+  return get(ref(database, `/board/${boardId}/comments`))
+  .then((snapshot)=> {
+    if(snapshot.exists()){
+      return Object.values(snapshot.val())
+    }
+    return []
+  })
+  
+}
+
+//  리뷰 글 작성 
+export async function  addReview(productId, user, text ,timestamp) {
+  const reviewId = uuid()
+  const reviewRef = ref(database,  `review/${productId}/${reviewId}`);
+  try {
+    await set(reviewRef, {
+      id: reviewId,
+      user: user,
+      text: text,
+      timestamp : timestamp
+    }) 
+    return reviewId
+  } catch (error){
+    console.error(error)
+  }
+}
+
+//리뷰 글 불러오기 
+
+export async function getReview(productId) {
+  const reviewRef = ref(database, `review/${productId}`)
+
+  try {
+    const snapshot = await get(reviewRef);
+    if(snapshot.exists()) {
+      return Object.values(snapshot.val())
+    } else {
+      return []
+    }
+  } catch(error) {
+    console.error(error)
+  }
+}
+
+// 좋아요 추가 
+
+export async function addLike(productId ,userId) {
+
+  const likeRef = ref(database, `like/${productId}`)
+  const userRef = ref(database, `like/${productId}/user/${userId}`);
+  try {
+    const snapshot = await get(likeRef);
+    let currentLikes = snapshot.exists() ? snapshot.val().count : 0 
+    currentLikes +=1 
+    await update(likeRef, {
+      count : currentLikes,
+      [`user/${userId}`] : true, 
+    });
+      } catch(eroror){
+        console.error(eroror)
+      }   
+}
+// 좋아요 취소하기 
+export async function removeLike(productId, userId) {
+  const likeRef = ref(database, `like/${productId}`)
+  const userRef = ref(database, `like/${productId}/user/${userId}`)
+  try {
+      const snapshot = await get(likeRef);
+      let currentLikes = snapshot.exists() ? snapshot.val().count : 0; 
+      currentLikes = currentLikes > 0 ? currentLikes -1 : 0; 
+      await update(likeRef, {
+        count : currentLikes,
+        [`user/${userId}`] : false, 
+    });
+    await remove(userRef);
+      } catch(eroror){
+        console.error(eroror)
+      }   
+}
+
+// 사용자가 좋아요를 했는지 안했는지 여부 확인
+export async function hasLike(productId, userId) {
+  const userRef = ref(database , `like/${productId}/user/${userId}`)
+  try {
+    const snapshot = await get(userRef);
+    return snapshot.exists();
+  } catch(error) {
+    console.error(error)
+  }
+}
+
+
+// 좋아요 가져오기 
+
+export async function getLike(productId) {
+  const likeRef = ref(database, `like/${productId}`)
+  try {
+    const snapshot = await get(likeRef);
+    if (snapshot.exists()){
+      return snapshot.val()
+    }else {
+      return 0 
+    }
+  } catch(error) {
+    console.error(error);
+    return 0
+  }
+  
 }
